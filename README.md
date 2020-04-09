@@ -817,6 +817,53 @@ you can customize the vendor name/directory for your installation by tweaking in
 ```
 Réf: https://k8scifsvol.juliohm.com.br/
 
+### Velero - Backup & Restore Kubernetes Cluster
 
+## Set up Velero tool
+Download Velero v1.2.3 and copy the binary in /usr/local/bin/ :
+```bash
+wget https://github.com/vmware-tanzu/velero/releases/download/v1.3.2/velero-v1.3.2-linux-amd64.tar.gz
+tar xfzv velero-v1.3.2-linux-amd64.tar.gz
+sudo mv velero-v1.3.2-linux-amd64/velero /usr/local/bin/
+```
+Create credentials file (Needed for velero initialization):
+```bash
+cat <<EOF>> minio.credentials
+[default]
+aws_access_key_id=minio
+aws_secret_access_key=minio123
+EOF
+```
+Install Velero in the Kubernetes Cluster:
+```bash
+velero install --provider aws --plugins velero/velero-plugin-for-aws:v1.0.0 --bucket backups --provider aws --secret-file ./minio.credentials --backup-location-config region=us-east-2 --snapshot-location-config region=minio,s3ForcePathStyle=true,s3Url=http://172.17.0.66:9000 --use-restic
+```
+--use-restic: Velero has support for backing up and restoring Kubernetes volumes using a free open-source backup tool called restic
+to explore more about this solution https://velero.io/docs/v1.3.2/restic/
 
-
+Enable tab completion for preferred shell:
+```bash
+source <(velero completion bash)
+```
+## Backup commands
+You can always play with --inclue/--exclude variables to get a precise backup
+```bash
+velero backup get
+velero backup-location get
+velero backup create "backup-name" --include-namespaces="namespace-name"
+velero backup create "backup-name" --include-namespaces="namespace-name" --exclude-resouces=nginx-deploy
+velero backup describe "backup-name"
+```
+## Restore commands
+```bash
+velero restore get
+velero restore create "restore-name" --from-backup="backup-name"
+velero restore describe "restore-name"
+```
+## How to schedule a backup
+you can always use all option available on velero backup to get the k8s-objects youu would to backup
+```bash
+velero schedule get 
+velero schedule create "schedule-name" --schedule="30 */12 * * *" --include-namespaces default 
+```
+N.B: if you would set up an old version such as v1.0.0 on your kubernetes environment version 1.16.0, you will be obliged to make some changes on minio/deployments (apps/v1 beta1 ti apps/v1 - add replicas field to spec section of deployment - add selector fields to spec section) 
