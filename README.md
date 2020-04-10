@@ -1,12 +1,17 @@
 # kubernetes
 Kubernetes playground
+
 # installation metalLB
+On Cloud infrastructure, the provider ensures laodBalancing role for your k8s cluster, but on premise cluster needs a deployment of  Laod balancing solution which allows to you to use laodbalancer function, MetalLB is one of the quintessential solution which permit to do this:
+
 1) telecharger manifest depuis le site officiel
-https://metallb.universe.tf/installation/
+Réf: https://metallb.universe.tf/installation/
 
 kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml
 
-2)ajouter une configMap pour définir la plage IP external
+2- Add a configMap to define a range of ExternalIP-addresses
+run kubectl get nodes -o wide to know about the range of addresses you need to reserve.
+
 ```
 apiVersion: v1
 kind: ConfigMap
@@ -21,8 +26,8 @@ data:
       addresses:
       - 172.23.0.100-172.23.0.250    
 ```
-# install and configure ingress controller with nginx Bare Metal
 
+# install and configure ingress controller with nginx Bare Metal
 
 ## install nginx controller
 ressources:
