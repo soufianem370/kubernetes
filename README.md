@@ -387,11 +387,12 @@ EOF
 ```
 ```
 yum install kubeadm docker -y 
-systemctl enable kubelet
-systemctl start kubelet
-systemctl enable docker
-systemctl start docker
+systemctl enable kubelet && systemctl enable docker
+systemctl start kubelet && systemctl start docker
+swapoff -a
 ```
+edit /etc/fstab to make a swap disabled permanently
+
 ==> sur le neud master intier le cluster
 ```
 swapoff -a
