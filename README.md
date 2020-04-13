@@ -917,6 +917,9 @@ helm install --namespace <YOUR NAMESPACE> \
 vmware-tanzu/velero
  ``` 
  # install flux 
+ forker ce repo
+ https://github.com/soufianem370/flux-get-started/settings/keys
+ 
 Add the Flux repository:
 ```
 helm repo add fluxcd https://charts.fluxcd.io
@@ -960,5 +963,10 @@ Allow some time for all containers to get up and running. If you're impatient, r
 watch kubectl -n flux get pods
 ```
 You will notice that flux and flux-helm-operator will start turning up in the flux namespace.
+
+## install fluxctl
+https://snapcraft.io/install/fluxctl/centos
+
+
  
  
