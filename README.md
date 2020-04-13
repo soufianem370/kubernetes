@@ -916,6 +916,49 @@ helm install --namespace <YOUR NAMESPACE> \
 --set initContainers[0].volumeMounts[0].name=plugins \
 vmware-tanzu/velero
  ``` 
- 
+ # install flux 
+Add the Flux repository:
+```
+helm repo add fluxcd https://charts.fluxcd.io
+```
+Apply the Helm Release CRD:
+```
+kubectl apply -f https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
+```
+In this next step you install Flux using helm. Simply
+
+Fork fluxcd/flux-get-started on GitHub and replace the fluxcd with your GitHub username in here
+
+Create the flux namespace:
+
+```
+kubectl create namespace flux
+```
+Install Flux and the Helm Operator by specifying your fork URL:
+
+Just make sure you replace YOURUSER with your GitHub username in the command below:
+
+Using a public git server from bitbucket.com, github.com, gitlab.com, dev.azure.com, or vs-ssh.visualstudio.com:
+```
+helm upgrade -i flux fluxcd/flux \
+--set git.url=git@github.com:soufianem370/flux-get-started \
+--namespace flux
+```
+```
+helm upgrade -i helm-operator fluxcd/helm-operator \
+--set git.ssh.secretName=flux-git-deploy \
+--namespace flux
+```
+Note: By default the helm-operator chart will install with support for both Helm v2 (which requires Tiller) and v3. You can target specific versions by setting the helm.versions value, e.g. --set helm.versions=v3.
+
+Using a private git server:
+When deploying from a private repo, the known_hosts of the git server needs to be configured into a kubernetes configmap so that StrictHostKeyChecking is respected. See the README of the chart for further installation instructions in this case.
+
+Allow some time for all containers to get up and running. If you're impatient, run the following command and see the pod creation process.
+
+```
+watch kubectl -n flux get pods
+```
+You will notice that flux and flux-helm-operator will start turning up in the flux namespace.
  
  
