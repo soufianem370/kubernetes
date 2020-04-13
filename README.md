@@ -455,6 +455,8 @@ naoynf.c7il2s44pimqg3w0
 ```
 kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
 ```
+5) si ça marche pas vérifier la synchronisation de la date entre le worker et le master
+6) regénérer le token sur le master et rejoigné le worker avec le nouveau token
 ## install cluster k8s sur AWS avec Kops
 
 1. Create Ubuntu EC2 instance
