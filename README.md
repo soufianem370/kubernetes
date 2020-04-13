@@ -409,6 +409,21 @@ worker# kubeadm join 172.17.0.10:6443 --token jlsu5g.1wp4m5i3aza82yjf \
     --discovery-token-ca-cert-hash sha256:f246b98d354a5371dad50153d751b36f59f4866c0d4ce4f6b8bda8167cb49e71
 ```
 
+==> Installer bash-completion
+
+```
+#yum install bash-completion
+
+#source /usr/share/bash-completion/bash_completion
+```
+
+==>Activer l’auto-complétion de kubectl
+
+```
+#echo 'source <(kubectl completion bash)' >>~/.bashrc
+#kubectl completion bash >/etc/bash_completion.d/kubectl
+```
+
 ## maintenance d'un cluster kubernetes kubeadm
 1)sur le master
 pour désinstaller tous les composants k8s
@@ -451,12 +466,16 @@ naoynf.c7il2s44pimqg3w0
 #kubeadm join 192.168.1.247:6443 --token 0g9j4w.fzc8nc7jhmkvttiv \
     --discovery-token-ca-cert-hash sha256:34ee91bf998850c90c88bb49206a9b2758441d427fc47d50cc4157f9d4a7e5d6
 ```
-4) installé un CNI calico ou weave-net 
+4) si ça marche pas vérifier la synchronisation de la date entre le worker et le master
+
+5) regénérer le token sur le master et rejoigné le worker avec le nouveau token
+
+6) installé un CNI calico ou weave-net 
+
 ```
 kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
 ```
-5) si ça marche pas vérifier la synchronisation de la date entre le worker et le master
-6) regénérer le token sur le master et rejoigné le worker avec le nouveau token
+
 ## install cluster k8s sur AWS avec Kops
 
 1. Create Ubuntu EC2 instance
