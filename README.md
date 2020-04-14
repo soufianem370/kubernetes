@@ -893,7 +893,7 @@ you can always use all option available on velero backup to get the k8s-objects 
 velero schedule get 
 velero schedule create "schedule-name" --schedule="30 */12 * * *" --include-namespaces default 
 ```
-N.B: if you would set up an old version such as v1.0.0 on your kubernetes environment version 1.16.0, you will be obliged to make some changes on minio/deployments (apps/v1 beta1 ti apps/v1 - add replicas field to spec section of deployment - add selector fields to spec section) 
+N.B: if you would set up an old version such as v1.0.0 on your kubernetes environment version 1.16.0, you will be obliged to make some changes on minio/deployments (apps/v1beta1 to apps/v1 - add replicas field to spec section of deployment - add selector fields to spec section) 
  *** to set up Velero through helm repo
  Add VMware Tanzu repository to Helm repos:
 ```bash
@@ -959,7 +959,7 @@ When deploying from a private repo, the known_hosts of the git server needs to b
 
 Allow some time for all containers to get up and running. If you're impatient, run the following command and see the pod creation process.
 
-```
+```bash
 watch kubectl -n flux get pods
 ```
 You will notice that flux and flux-helm-operator will start turning up in the flux namespace.
@@ -968,5 +968,56 @@ You will notice that flux and flux-helm-operator will start turning up in the fl
 https://snapcraft.io/install/fluxctl/centos
 
 
- 
+### Using Kind to deploy a Kubernetes Cluster
+
+1- Download from golang.org the package file, which correspond to your OS
+For linuxOS
+```bash
+wget https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz
+``` 
+2- Extract that file to /usr/local 
+```bash
+tar xfzv go1.14.2.linux-amd64.tar.gz -C /usr/local
+``` 
+3- export Go package to your current path:
+```bash
+export PATH=$PATH:/usr/local/go/bin
+```
+4- access the kubernetes-sigs/kind repo, there is a single command you need tu run 
+```bash
+GO111MODULE="on" go get sigs.k8s.io/kind@v0.7.0
+```
+5- copy kind binary to your path directory or export its the present path
+```bash
+cp /go/bin/kind /usr/local/bin/kind 
+# or
+export PATH=$PATH:/home/user/go/bin
+```
+6- Command you should to know about kind
+```bash
+which kind
+kind version
+kind help kind help create 
+kind create cluster 
+kind create cluster --config config-file-path
+kind delete cluster
+```
+7- the command "kind create cluster" will create just one master nodes, if you want to create customized config, you need just to create a yaml file, than choose the config you find appropriate, to get several models of theses configuration:
+```bash
+# three node (two workers) cluster config
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+```
+Réf: https://kind.sigs.k8s.io/docs/user/quick-start#creating-a-cluster
+N.B: 
+```bash
+kind create cluster --config config-file.yaml
+```
+N.B: In case if you want to deploy a high availibility cluster with 03 master or more and workers, kind will ensure with theses nodes another node which will be deployed therefore ensuring the HA role (HA Proxy).
+
+
  
