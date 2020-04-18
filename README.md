@@ -256,6 +256,8 @@ yum install nfs-utils
 4)sur le cluster kubernetes lancer la creation d'une storageclass avec la charte helm
 
 ```
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo update
 helm install stable/nfs-client-provisioner --set nfs.server=172.23.0.1 --set nfs.path=/srv/nfs/kubedata
 ```
 nfs.server=l'adresse du serveur phisique nfs
