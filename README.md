@@ -631,6 +631,10 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scr
 chmod 700 get_helm.sh
 ./get_helm.sh
 ```
+if you get an error that show up run the cmd bellow to make helm executable
+```sh
+sudo chmod +x linux-amd64/helm && sudo mv linux-amd64/helm /usr/bin/helm
+```
 2. helm completion
 Generate autocompletions script for the specified shell bash 
 ```sh
