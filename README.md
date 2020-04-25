@@ -1025,5 +1025,22 @@ kind create cluster --config config-file.yaml
 ```
 N.B: In case if you want to deploy a high availibility cluster with 03 master or more and workers, kind will ensure with theses nodes another node which will be deployed therefore ensuring the HA role (HA Proxy).
 
+### Deploy an ELK slack on Kuberenetes Cluster
+         
+ELK:
+     - ElasticSearch: Storage Engin
+     - Logstach: Receive and store logs in ElasticSearch
+     - kibana: virtualise the logs - dashboard - report 
+1- ElasticSearch Pre-requisistes:
+Java 8 - Port 9200 - Port 9300 (Node de communication) - config file: /etc/elasticsearch/elasticsearch.yaml - Log files: /var/log/elasticsearch 
+2- Logstach Pre-requisistes: Port 5044 - config-file: /etc/logstach/conf.d/01-logstach-simple.conf - log-files: journal enabled 
+3- Kibana Pre-requisistes: Port 5601 - Use Nginx as reverse proxy - config-file /etc/kibana/kibana.yml - log-files: journal enabled
+
+## Setup Components
+following steps in quickstart ELK website:
+```bash
+https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-quickstart.html
+```
+Using port/forward ALLOW to access theses component just from the localhost, so to access logstash and kibana trough a browser from an outside machine you must modify each svc for each component from ClusterIP type to NodePort or to LoadBalancer if you have already installed one metalLb for eg.
 
  
