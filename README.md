@@ -477,6 +477,24 @@ naoynf.c7il2s44pimqg3w0
 ```
 kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
 ```
+## install cluster K8S with kubespray
+
+clone this repo with tag v2.11.0
+
+```
+https://github.com/kubernetes-sigs/kubespray.git
+```
+create inventory automatique
+```
+cd kybespray 
+apt-get install python3-pip
+pip3  install -r contrib/inventory_builder/requirements.txt
+cp -rfp inventory/sample inventory/mycluster
+declare -a IPS=(192.168.122.134 192.168.122.216 192.168.122.193)  #example...
+CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+```
+
+
 
 ## install cluster k8s sur AWS avec Kops
 
