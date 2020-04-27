@@ -340,12 +340,13 @@ password nous pouvons le récuperé depuis le secret du chart
 kubectl get secret --namespace default mygrafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 mygrafana: nom du chart
-## install rancher on your cluster
-1)run container runcher on your local machine
+
+## install rancher on your cluster version is compatible with prometheus
+
+1)run container runcher on your local machine this version is compatible with prometheus
 
 ```
-sudo docker run -d --restart=unless-stopped -p 80:80 -p 443:443 rancher/rancher
-```
+docker run --name rancher -d -p 80:80 -p 443:443 -v rancher-data:/var/lib/rancher rancher/rancher:v2.3.5```
 2)execute this manifests on your cluster k8S
 ```
 curl --insecure -sfL https://localhost/v3/import/qv476x7mtw2kw2fp6fz452glcmknsgwj6cvx7jqxt9mrv2qts2mwdd.yaml | kubectl apply -f -
