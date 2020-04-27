@@ -346,12 +346,15 @@ mygrafana: nom du chart
 1)run container runcher on your local machine this version is compatible with prometheus
 
 ```
-docker run --name rancher -d -p 80:80 -p 443:443 -v rancher-data:/var/lib/rancher rancher/rancher:v2.3.5```
+docker run --name rancher -d -p 80:80 -p 443:443 -v rancher-data:/var/lib/rancher rancher/rancher:v2.3.5
+```
 2)execute this manifests on your cluster k8S
+
 ```
 curl --insecure -sfL https://localhost/v3/import/qv476x7mtw2kw2fp6fz452glcmknsgwj6cvx7jqxt9mrv2qts2mwdd.yaml | kubectl apply -f -
 ```
 ## installation cluster with kubeadm
+
 ==>tous ces taches à executer sur l'ensemble des machines worker et master
 
 ```
@@ -397,11 +400,13 @@ swapoff -a
 edit /etc/fstab to make a swap disabled permanently
 
 ==> sur le neud master intier le cluster
+
 ```
 swapoff -a
 kubeadm init
 ```
 apres l'execution de cette commande nous aurons le token pour joingné les workers
+
 ```
 kubeadm join 172.17.0.10:6443 --token jlsu5g.1wp4m5i3aza82yjf \
     --discovery-token-ca-cert-hash sha256:f246b98d354a5371dad50153d751b36f59f4866c0d4ce4f6b8bda8167cb49e71
