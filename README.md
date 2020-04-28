@@ -479,9 +479,13 @@ naoynf.c7il2s44pimqg3w0
 5) regénérer le token sur le master et rejoigné le worker avec le nouveau token
 
 6) installé un CNI calico ou weave-net 
-
+==> calico
 ```
 kubectl apply -f https://docs.projectcalico.org/v3.9/manifests/calico.yaml
+```
+===> weave-net
+```
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
 ## install cluster K8S with kubespray
 
