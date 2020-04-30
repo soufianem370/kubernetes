@@ -969,6 +969,7 @@ Add the Flux repo:
 
 ```sh
 helm repo add fluxcd https://charts.fluxcd.io
+helm repo update
 ```
 
 #### Install the chart with the release name `flux`
@@ -1004,12 +1005,9 @@ and follow the instructions given in this url: https://help.github.com/en/github
 1. Install Flux:
 
    ```sh
-   helm upgrade -i flux fluxcd/flux \
-   --set git.url='https://$(GIT_AUTHUSER):$(GIT_AUTHKEY)@github.com/soufianem370/to-be-fluxed.git' \
-   --set env.secretName=flux-git-auth \
-   --namespace flux
+   helm install flux --set git.url='https://$(GIT_AUTHUSER):$(GIT_AUTHKEY)@github.com/soufianem370/to-be-fluxed.git' \
+   --set env.secretName=flux-git-auth --namespace flux fluxcd/flux
    ```
-
 
 ### Using Kind to deploy a Kubernetes Cluster
 
