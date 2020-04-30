@@ -951,55 +951,64 @@ helm install --namespace <YOUR NAMESPACE> \
 vmware-tanzu/velero
  ``` 
  # install flux 
- forker ce repo
- https://github.com/soufianem370/flux-get-started/settings/keys
- 
-Add the Flux repository:
-```
+ forker ce repo qui sera exemple de tes deployment
+ https://github.com/soufianem370/to-be-fluxed.git
+## Installation
+
+We put together a simple [Get Started
+tutorial](https://docs.fluxcd.io/en/stable/tutorials/get-started-helm) which takes about 5-10 minutes to follow.
+You will have a fully working Flux installation deploying workloads to your cluster.
+
+## Installing Flux using Helm
+
+The [configuration](#configuration) section lists all the parameters that can be configured during installation.
+
+### Installing the Chart
+
+Add the Flux repo:
+
+```sh
 helm repo add fluxcd https://charts.fluxcd.io
 ```
-Apply the Helm Release CRD:
-```
-kubectl apply -f https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
-```
-In this next step you install Flux using helm. Simply
 
-Fork fluxcd/flux-get-started on GitHub and replace the fluxcd with your GitHub username in here
+#### Install the chart with the release name `flux`
 
-Create the flux namespace:
+1. Create the flux namespace:
 
-```
-kubectl create namespace flux
-```
-Install Flux and the Helm Operator by specifying your fork URL:
+   ```sh
+   kubectl create namespace flux
+   ```
 
-Just make sure you replace YOURUSER with your GitHub username in the command below:
+#### Flux with git over HTTPS
 
-Using a public git server from bitbucket.com, github.com, gitlab.com, dev.azure.com, or vs-ssh.visualstudio.com:
-```
-helm upgrade -i flux fluxcd/flux \
---set git.url=git@github.com:soufianem370/flux-get-started \
---namespace flux
-```
-```
-helm upgrade -i helm-operator fluxcd/helm-operator \
---set git.ssh.secretName=flux-git-deploy \
---namespace flux
-```
-Note: By default the helm-operator chart will install with support for both Helm v2 (which requires Tiller) and v3. You can target specific versions by setting the helm.versions value, e.g. --set helm.versions=v3.
+By setting the `env.secretName`, all key/value pairs in this secret will
+be defined in the Flux container as environment variables. This can be
+utilized in combination with Kubernetes feature of [using environment
+variables inside of your config](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/#using-environment-variables-inside-of-your-config)
+to securely provide the HTTPS credentials which then can be used in the
+`git.url`.
 
-Using a private git server:
-When deploying from a private repo, the known_hosts of the git server needs to be configured into a kubernetes configmap so that StrictHostKeyChecking is respected. See the README of the chart for further installation instructions in this case.
+1. Create a personal access token to be used as the `GIT_AUTHKEY`:
 
-Allow some time for all containers to get up and running. If you're impatient, run the following command and see the pod creation process.
+https://github.com/settings/tokens
 
-```bash
-watch kubectl -n flux get pods
-```
-You will notice that flux and flux-helm-operator will start turning up in the flux namespace.
+and follow the instructions given in this url: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
 
-## install fluxctl
-https://snapcraft.io/install/fluxctl/centos
+1. Create a secret with your `GIT_AUTHUSER` (the username the token belongs
+   to) and the `GIT_AUTHKEY` you created in the first step:
+
+   ```sh
+   kubectl create secret generic flux-git-auth --namespace flux --from-literal=GIT_AUTHUSER=soufianem370 --from-literal=GIT_AUTHKEY=c3d9f077a80f7285b110691d8cc9c6642ac3eff8
+   ```
+
+1. Install Flux:
+
+   ```sh
+   helm upgrade -i flux fluxcd/flux \
+   --set git.url='https://$(GIT_AUTHUSER):$(GIT_AUTHKEY)@github.com/soufianem370/to-be-fluxed.git' \
+   --set env.secretName=flux-git-auth \
+   --namespace flux
+   ```
 
 
 ### Using Kind to deploy a Kubernetes Cluster
