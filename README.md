@@ -370,6 +370,9 @@ helm upgrade my-release stable/prometheus-operator --set prometheusOperator.crea
 --set alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes={"ReadWriteOnce"} \
 --set alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage=10Gi
 ```
+### to monitor external services from your cluster k8s:
+
+https://jpweber.io/blog/monitor-external-services-with-the-prometheus-operator/
 
 ## install rancher on your cluster version is compatible with prometheus
 
