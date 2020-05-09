@@ -341,6 +341,36 @@ kubectl get secret --namespace default mygrafana -o jsonpath="{.data.admin-passw
 ```
 mygrafana: nom du chart
 
+## install prometheus with prometheus-operator to monitoring all metrics for cluster(helm)
+Helm fails to create CRDs
+
+You should upgrade to Helm 2.14 + in order to avoid this issue. However, if you are stuck with an earlier Helm release you should instead use the following approach: Due to a bug in helm, it is possible for the 5 CRDs that are created by this chart to fail to get fully deployed before Helm attempts to create resources that require them. This affects all versions of Helm with a potential fix pending. In order to work around this issue when installing the chart you will need to make sure all 5 CRDs exist in the cluster first and disable their previsioning by the chart:
+
+Create CRDs
+
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/release-0.38/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
+kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/release-0.38/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
+kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/release-0.38/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml
+kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/release-0.38/example/prometheus-operator-crd/monitoring.coreos.com_prometheusrules.yaml
+kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/release-0.38/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+kubectl apply -f https://raw.githubusercontent.com/coreos/prometheus-operator/release-0.38/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
+
+```
+Wait for CRDs to be created, which should only take a few seconds
+
+Install the chart, but disable the CRD provisioning by setting prometheusOperator.createCustomResource=false
+
+```
+helm upgrade my-release stable/prometheus-operator --set prometheusOperator.createCustomResource=false --set prometheus.service.type=NodePort --set prometheus.service.nodePort=32222 --set grafana.service.type=NodePort --set grafana.service.nodePort=32221 \
+--set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.storageClassName=nfs-client \
+--set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.accessModes={"ReadWriteOnce"} \
+--set prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.resources.requests.storage=50Gi \
+--set alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.storageClassName=nfs-client \
+--set alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes={"ReadWriteOnce"} \
+--set alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage=10Gi
+```
+
 ## install rancher on your cluster version is compatible with prometheus
 
 1)run container runcher on your local machine this version is compatible with prometheus
