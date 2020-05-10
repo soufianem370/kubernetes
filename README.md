@@ -273,8 +273,8 @@ kubectl patch storageclass nfs-client -p '{"metadata": {"annotations":{"storagec
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jenkins
-  namespace: jenkins
+  name: nexus-pvc
+  namespace: devops-tools
 spec:
   accessModes:
     - ReadWriteOnce
@@ -283,6 +283,43 @@ spec:
     requests:
       storage: 8Gi
   storageClassName: nfs-client
+```
+#### example of deploy use pvc storageClass
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus
+  namespace: devops-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-server
+  template:
+    metadata:
+      labels:
+        app: nexus-server
+    spec:
+      containers:
+        - name: nexus
+          image: sonatype/nexus3:latest
+          resources:
+            limits:
+              memory: "4Gi"
+              cpu: "1000m"
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: nexus-data
+              mountPath: /nexus-data
+      volumes:
+       - name: nexus-data
+         persistentVolumeClaim:
+          claimName: nexus-pvc
 ```
 
 # installation prometheus avec grafana en utilisant helm
