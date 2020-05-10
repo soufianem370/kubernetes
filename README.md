@@ -268,6 +268,22 @@ nfs.path=le dossier partagé ou export nfs
 ```
 kubectl patch storageclass nfs-client -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}' 
 ```
+#### pvc use storageClass
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: nfs-client
+```
 
 # installation prometheus avec grafana en utilisant helm
 install helm in your cluster
