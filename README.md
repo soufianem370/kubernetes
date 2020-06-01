@@ -26,6 +26,8 @@ data:
       addresses:
       - 172.23.0.100-172.23.0.250    
 ```
+# Using CoreDNS and MetalLB on bare-metal Kubernetes clusters
+https://github.com/soufianem370/bare-metal-k8s
 
 # install and configure ingress controller with nginx Bare Metal
 
