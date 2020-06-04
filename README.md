@@ -427,6 +427,122 @@ helm upgrade my-release stable/prometheus-operator --set prometheusOperator.crea
 ```
 ### to monitor external services from your cluster k8s:
 
+https://medium.com/zolo-engineering/configuring-prometheus-operator-helm-chart-with-aws-eks-part-2-monitoring-of-external-services-342e352d85f0 (tester fonctionne tres bien)
+
+Example 1: Monitoring MySQL Cluster
+
+MySQL Helm Chart: https://github.com/helm/charts/tree/master/stable/mysql
+```
+git clone https://github.com/helm/charts.git
+cd chats/stable/mysql
+vim values
+```
+adapter les values de la charte avec ces options pour activer les metric sur la charte mysql
+À partir de la section ci-dessous, nous apprenons que nous activons les options de métriques (Démarrer un exportateur Prometheus side-car) et nos métriques sont exposées sur le port 9104, et après le déploiement dans le cluster, nous pouvons obtenir plus d'informations par son service.
+````
+metrics:
+enabled: true
+image: prom/mysqld-exporter
+imageTag: v0.10.0
+imagePullPolicy: IfNotPresent
+resources: {}
+annotations:
+prometheus.io/scrape: "true"
+prometheus.io/port: "9104"
+livenessProbe:
+initialDelaySeconds: 15
+timeoutSeconds: 5
+readinessProbe:
+initialDelaySeconds: 5
+timeoutSeconds: 1
+```
+activer le storage classe si tu as pas spécifier un storageClasse sur votre cluster k8s
+
+```
+  storageClass: "nfs-client"
+  accessMode: ReadWriteOnce
+  size: 8Gi
+  annotations: {}
+```
+lancer l'installation de la chart
+```
+kubectl create namespace mysql
+helm install  mysql-8-0-19 stable/mysql --values values.yaml --namespace mysql
+```
+apres l'installation vérifier le service
+À partir du fichier ci-dessous, nous pouvons vérifier que le nom du port est des métrics par défaut et des étiquettes de même, puis les ajouter dans notre moniteur de service afin que Prometheus puisse découvrir nos cibles.
+```
+ #kubectl get svc mysql-8-0-19 -n mysql -o yaml
+#Service for mysql cluster
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/port: "9104"
+    prometheus.io/scrape: "true"
+  creationTimestamp: 
+  labels:
+    app: mysql-8-0-19
+    chart: mysql-1.6.2
+    heritage: Tiller
+    release: mysql-8-0-19
+  name: mysql-8-0-19
+  namespace: mysql
+  resourceVersion: 
+  selfLink: 
+  uid: 
+spec:
+  clusterIP: 
+  ports:
+  - name: mysql
+    port: 3306
+    protocol: TCP
+    targetPort: mysql
+  - name: metrics
+    port: 9104
+    protocol: TCP
+    targetPort: metrics
+  selector:
+    app: mysql-8-0-19
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+```
+### creer un service monitor pour ce nouveau service mysql commeça prom operator vas le detécter 
+adapter le namespace de monitoring avec le nom du namespace que vous utilisé
+exemple avec rancher il va creer un namespace de monitoring avec cattle-prometheus
+vim service_monitor_mysql.yaml
+
+```
+#Service Monitor for MySQL 
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mysql-exporter
+  labels:
+    release: prometheus-operator
+    app: mysql-8-0-19
+  namespace: cattle-prometheus
+spec:
+  endpoints:
+  - port: metrics
+    path: '/metrics'
+  namespaceSelector:
+    matchNames:
+    - cattle-prometheus
+    - mysql
+  selector:
+    matchLabels:
+      app: mysql-8-0-19
+```
+executer le service sur le namespace dédier pour la supervision
+```
+kubectl create -f service_monitor_mysql.yml -n cattle-prometheus
+```
+vérifier les targets dans votre instance prometheus vous devez trouver le service "cattle-prometheus/mysql-exporter/0 (1/1 up)"
+à était ajouiter 
+
 https://jpweber.io/blog/monitor-external-services-with-the-prometheus-operator/
 
 ## install rancher on your cluster version is compatible with prometheus
