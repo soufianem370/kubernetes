@@ -439,7 +439,7 @@ vim values
 ```
 adapter les values de la charte avec ces options pour activer les metric sur la charte mysql
 À partir de la section ci-dessous, nous apprenons que nous activons les options de métriques (Démarrer un exportateur Prometheus side-car) et nos métriques sont exposées sur le port 9104, et après le déploiement dans le cluster, nous pouvons obtenir plus d'informations par son service.
-````
+```
 metrics:
 enabled: true
 image: prom/mysqld-exporter
