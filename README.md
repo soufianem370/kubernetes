@@ -1,5 +1,27 @@
 # kubernetes
 Kubernetes and all technologies (metalLB,ingress-nginx,helm,storageclasse-nfs,prometheus/grafana,rancher,kubeadm,nexus)
+# configure ntp server
+```
+systemctl stop chronyd.service
+systemctl disable chronyd.service
+systemctl start ntpd
+yum install ntp
+systemctl start ntpd
+systemctl enable ntpd
+```
+
+## add serveur ntp maroc
+
+ vi /etc/ntp.conf
+```
+server 1.ma.pool.ntp.org
+server 3.africa.pool.ntp.org
+server 1.africa.pool.ntp.org
+systemctl restart ntpd
+```
+ntpq -p
+ntpdate -q
+
 
 # installation metalLB
 On Cloud infrastructure, the provider ensures laodBalancing role for your k8s cluster, but on premise cluster needs a deployment of  Laod balancing solution which allows to you to use laodbalancer function, MetalLB is one of the quintessential solution which permit to do this:
