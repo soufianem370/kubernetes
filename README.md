@@ -14,14 +14,17 @@ systemctl enable ntpd
 
  vi /etc/ntp.conf
 ```
-server 1.ma.pool.ntp.org
-server 3.africa.pool.ntp.org
+server 2.ma.pool.ntp.org
+server 0.africa.pool.ntp.org
 server 1.africa.pool.ntp.org
-systemctl restart ntpd
 ```
-ntpq -p
-ntpdate -q
+```
+systemctl restart ntpd
 
+ntpq -p
+
+ntpdate -q
+```
 
 # installation metalLB
 On Cloud infrastructure, the provider ensures laodBalancing role for your k8s cluster, but on premise cluster needs a deployment of  Laod balancing solution which allows to you to use laodbalancer function, MetalLB is one of the quintessential solution which permit to do this:
