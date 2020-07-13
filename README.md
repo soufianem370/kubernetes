@@ -2,6 +2,7 @@
 Kubernetes and all technologies (metalLB,ingress-nginx,helm,storageclasse-nfs,prometheus/grafana,rancher,kubeadm,nexus)
 # configure ntp server
 ```
+yum remove chrony
 systemctl stop chronyd.service
 systemctl disable chronyd.service
 systemctl start ntpd
@@ -20,9 +21,8 @@ server 1.africa.pool.ntp.org
 ```
 ```
 systemctl restart ntpd
-
+timedatectl set-ntp true
 ntpq -p
-
 ntpdate -q
 ```
 
