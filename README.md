@@ -422,6 +422,7 @@ kubectl get secret --namespace default mygrafana -o jsonpath="{.data.admin-passw
 mygrafana: nom du chart
 
 ## install prometheus with prometheus-operator to monitoring all metrics for cluster(helm)
+https://blog.ineat-group.com/2020/05/prometheus-operator-dans-kubernetes/ (documentation très important)
 Helm fails to create CRDs
 
 You should upgrade to Helm 2.14 + in order to avoid this issue. However, if you are stuck with an earlier Helm release you should instead use the following approach: Due to a bug in helm, it is possible for the 5 CRDs that are created by this chart to fail to get fully deployed before Helm attempts to create resources that require them. This affects all versions of Helm with a potential fix pending. In order to work around this issue when installing the chart you will need to make sure all 5 CRDs exist in the cluster first and disable their previsioning by the chart:
