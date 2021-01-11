@@ -42,7 +42,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: metallb-system
-  name: config
+  name: config,
 data:
   config: |
     address-pools:
