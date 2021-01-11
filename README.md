@@ -353,9 +353,9 @@ spec:
 install helm in your cluster
 install chart prometheus
 ```
-helm inspect stable/prometheus > /tmp/prom.values
+helm inspect values stable/prometheus > /tmp/prom.values
 ```
-change type off service on NodePort
+change type of service on NodePort
 vim /tmp/prom.values
 ```
     externalIPs: []
