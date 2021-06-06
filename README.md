@@ -271,16 +271,39 @@ spec:
 
 # install storageClass nfs avec une helm nfs-client-provisioner
 
-1)installer nfs server voir la doc https://github.com/soufianem370/admin_linux
+### installer nfs server on ubuntu
+#### on server-nfs
+sudo apt update
+sudo apt install nfs-kernel-server
+mkdir -p /srv/nfs/kubedata
+echo test > /srv/nfs/kubedata/testfileshared
+sudo chown nobody:nogroup /srv/nfs/kubedata
+sudo chmod 777 /srv/nfs/kubedata
+```
+sudo nano /etc/exports
+/mnt/sharedfolder 172.16.16.0/24(rw,sync,no_subtree_check)
+```
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server
 
-2)create partage sur le serveur nfs /srv/nfs/kubedata
+#### on client-nfs
+sudo apt-get install nfs-common
+sudo mkdir /mnt/mynfs
+sudo mount 172.16.16.101:/srv/nfs/kubedata /mnt/mynfs
 
-3)dans chaque serveur du cluster k8s installé nfs-utils
+
+### installer nfs server on centos
+1)create partage sur le serveur nfs /srv/nfs/kubedata
+
+2)dans chaque serveur du cluster k8s installé nfs-utils
 
 ```
 yum install nfs-utils
 ```
-4)sur le cluster kubernetes lancer la creation d'une storageclass avec la charte helm
+
+#### once your nfs server is installed you can install storageclass with helm charte 
+
+1) install storageclass
 
 ```
 helm repo add stable https://kubernetes-charts.storage.googleapis.com/
@@ -290,7 +313,7 @@ helm install stable/nfs-client-provisioner --set nfs.server=172.23.0.1 --set nfs
 nfs.server=l'adresse du serveur phisique nfs
 nfs.path=le dossier partagé ou export nfs
 
-5)mettre le storage classe créer entant que storageclasse par-defaut
+2)mettre le storage classe créer entant que storageclasse par-defaut
 
 ```
 kubectl patch storageclass nfs-client -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}' 
