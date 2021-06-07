@@ -272,27 +272,40 @@ spec:
 # install storageClass nfs avec une helm nfs-client-provisioner
 
 ### installer nfs server on ubuntu
+
 #### on server-nfs
+
 sudo apt update
+
 sudo apt install nfs-kernel-server
+
 mkdir -p /srv/nfs/kubedata
+
 echo test > /srv/nfs/kubedata/testfileshared
+
 sudo chown nobody:nogroup /srv/nfs/kubedata
+
 sudo chmod 777 /srv/nfs/kubedata
+
 ```
 sudo nano /etc/exports
 /mnt/sharedfolder 172.16.16.0/24(rw,sync,no_subtree_check)
 ```
 sudo exportfs -a
+
 sudo systemctl restart nfs-kernel-server
 
 #### on client-nfs
+
 sudo apt-get install nfs-common
+
 sudo mkdir /mnt/mynfs
+
 sudo mount 172.16.16.101:/srv/nfs/kubedata /mnt/mynfs
 
 
 ### installer nfs server on centos
+
 1)create partage sur le serveur nfs /srv/nfs/kubedata
 
 2)dans chaque serveur du cluster k8s installé nfs-utils
@@ -306,7 +319,7 @@ yum install nfs-utils
 1) install storageclass
 
 ```
-helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo add stable https://charts.helm.sh/stable
 helm repo update
 helm install stable/nfs-client-provisioner --set nfs.server=172.23.0.1 --set nfs.path=/srv/nfs/kubedata
 ```
@@ -371,6 +384,34 @@ spec:
          persistentVolumeClaim:
           claimName: nexus-pvc
 ```
+#### tshoot nfs storageclass 
+##### problem
+
+Using Kubernetes v1.20.0, getting "unexpected error getting claim reference: selfLink was empty, can't make reference"
+
+##### solution 
+Current workaround is to edit /etc/kubernetes/manifests/kube-apiserver.yaml
+
+Under here:
+
+```
+spec:
+  containers:
+  - command:
+    - kube-apiserver
+```
+Add this line:
+
+```
+- --feature-gates=RemoveSelfLink=false
+```
+
+The do this:
+```
+kubectl apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
+kubectl apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
+```
+(I had to do it twice to get it to work)
 
 # installation prometheus avec grafana en utilisant helm
 install helm in your cluster
