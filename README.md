@@ -761,6 +761,10 @@ else
     echo "This script doesn't support ELK installation on this OS."
 fi
 ```
+# cluster k8s installation 
+
+## deploy a cluster eks with terraform (tested by souf)
+https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/cloud/amazon/terraform
 ## installation cluster with kubeadm
 
 ==>tous ces taches à executer sur l'ensemble des machines worker et master
